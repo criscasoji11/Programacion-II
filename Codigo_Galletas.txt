@@ -1,0 +1,201 @@
+import numpy as np 
+#import sys
+#sys.exit(0)
+
+class Galleta:
+    
+    # ATRTIBUTOS
+    
+    @property
+    def precio_fabricacion(self):
+        return self.__precio_fabricacion
+    
+    @precio_fabricacion.setter
+    def precio_fabricacion(self, nuevo_valor):
+        if (nuevo_valor >= 0):
+            self.__precio_fabricacion = nuevo_valor 
+        else:
+            raise ValueError ('El Precio de fabricación debe ser un valor positivo')
+        
+    @property
+    def precio_venta(self):
+        return self.__precio_venta 
+        
+    @precio_venta.setter
+    def precio_venta(self, nuevo_valor):
+        if (nuevo_valor >= 0):
+            self.__precio_venta = nuevo_valor 
+        else:
+            raise ValueError ('El Precio de venta debe ser un valor positivo')
+        
+    @property
+    def precio_venta_final(self):
+        return self.__precio_venta_final 
+        
+    @precio_venta_final.setter
+    def precio_venta_final(self, nuevo_valor):
+        if (nuevo_valor >= 0):
+            self.__precio_venta_final = nuevo_valor 
+        else:
+            raise ValueError ('El Precio de venta debe ser un valor positivo')    
+    
+    @property
+    def impuesto(self):
+        return self.__impuesto 
+    
+    @impuesto.setter
+    def impuesto (self, nuevo_valor):
+        if (nuevo_valor < 0):
+            raise ValueError('El impuesto debe ser un valor positivo')
+        if (nuevo_valor > 100):
+            raise ValueError('El impuesto no debe ser mayor al 100 por ciento del precio de la galleta')
+        else:
+            self.__impuesto = nuevo_valor
+            
+    @property
+    def devolucion(self):
+        return self.__motivo
+    
+    @devolucion.setter
+    def devolucion(self,motivo):
+        if motivo=='a':
+            self.__motivo='Es devuelta porque sabe muy maluco'
+        elif motivo=='b':
+            self.__motivo='Es devuelta porque esta muy fea'
+        elif motivo=='c':
+            self.__motivo='Es devuelta porque esta muy cara'
+        elif motivo=='d':
+            self.__motivo='Es devuelta porque esta vencida'         
+        else:
+            self.__motivo='Selecciono una opcion no valida'        
+        
+            
+    # __int__ es el método constructor. El  metodo constructor sirve para construir objetos
+    # co y pf son parametros y/o argumentos 
+    # Self: El primer parametro y/o argumento es el objeto en si, o sera g1, g2, g3... etc
+    
+    __slots__ = ['color_ojos' , '__precio_fabricacion' , '__precio_venta', '__impuesto', '__motivo','__precio_venta_final']
+
+    def __init__(self, co, pf=0):
+        self.color_ojos = co
+        self.precio_fabricacion = pf
+        
+    def __init__(self):
+        self.precio_venta = 0
+        self.precio_venta_final = 0
+        
+    print('\n******************************************************************') 
+    print('********** Por favor ingresar los datos de las galletas **********') 
+    print('******************************************************************')  
+    
+# user input
+    def pedir_datos(self, numero_galleta):
+        self.color_ojos = input(f'* Ingrese el color de los ojos de la galleta {numero_galleta+1}: ')
+        self.precio_fabricacion = float(input (f"* Ingrese el valor total de fabricación de la galleta {numero_galleta+1}: $"))
+        self.precio_venta = float(input(f'* Ingrese el valor de venta sugerido de la galleta {numero_galleta+1}: $'))
+        self.impuesto = float(input(f'* Ingrese el porcentaje del impuesto de la galleta {numero_galleta+1}: %'))
+    
+    def vender(self, numero_galleta):
+        self.precio_venta_final = float(input(f'* Ingrese por favor el valor de venta final de la galleta {numero_galleta}: $'))
+        self.precio_venta_final = self.precio_venta_final + ((self.precio_venta_final * self.impuesto)/100)
+        print(f'* El valor total para pagar es: ${self.precio_venta_final}')
+        
+    def devolver_galletas(self):
+        motivo=input('Ingrese el motivo de devolución:\n* (a): Sabe muy maluco\n* (b): Porque está muy fea\n* (c): Porque está muy cara\n* (d): Porque está vencida\nPor favor seleccione una opción: ')
+        self.devolucion = motivo
+        
+galletas_array = np.array([], dtype=object);   
+cantidad_galletas = int(input(f'\nIngrese la cantidad de galletas: '))
+
+valor_fabricacion = 0
+for i in range(0, cantidad_galletas):
+    g = Galleta()
+    g.pedir_datos(i)
+    valor_fabricacion = valor_fabricacion + g.precio_fabricacion
+    galletas_array = np.append(galletas_array, g)
+
+print('\n********************************************************************')     
+print('************** Valor de las galletas antes de vender ***************')
+print('********************************************************************')
+for g in galletas_array:
+    print(f'* El precio de la galleta es: ${g.precio_venta}')
+    
+print('\n********************************************************************')     
+print('******************** Cantidad de galletas vendidas *****************')
+print('********************************************************************')
+    
+cantidad_galletas_vendidas = int(input('\nIngrese la cantidad de galletas vendidas: '))
+
+devoluciones = np.empty(cantidad_galletas_vendidas, dtype=object) 
+
+subtotal_venta_galletas = 0
+devoluciones_total = 0
+for i in range(cantidad_galletas_vendidas):
+    galletas_array[i].vender(i+1)
+    subtotal_venta_galletas = subtotal_venta_galletas + galletas_array[i].precio_venta_final
+    devolucion = input('Desea devolver alguna galleta S/N: ')
+    if devolucion.lower() == 's':
+        motivo = galletas_array[i].devolver_galletas()
+        devoluciones_total = devoluciones_total + galletas_array[i].precio_venta_final
+        devoluciones[i] = (i, galletas_array[i].devolucion)  
+    else:
+        devoluciones[i] = (i, "* No devueltas")
+        
+print('\n********************************************************************')         
+print('************* Información de la venta de las galletas **************') 
+print('********************************************************************')     
+
+print('\nValor de las galletas después de vender')
+for g in galletas_array:
+    print('* El valor de la galleta es: $',g.precio_venta_final)
+
+cant_sabe_maluco = 0
+cant_esta_fea = 0
+cant_muy_cara = 0
+cant_vencida = 0
+
+for i in range(len(devoluciones)):
+    if devoluciones[i][1] == 'Es devuelta porque sabe muy maluco':
+        cant_sabe_maluco=cant_sabe_maluco+1
+    elif devoluciones[i][1] == 'Es devuelta porque esta muy fea':
+        cant_sabe_feo = cant_esta_fea+1
+    elif devoluciones[i][1] == 'Es devuelta porque esta muy cara':
+        cant_muy_cara = cant_muy_cara+1
+    elif devoluciones[i][1] == 'Es devuelta porque esta vencida':
+        cant_vencida = cant_vencida+1
+        
+suma_cantidades=cant_sabe_maluco+cant_esta_fea+cant_muy_cara+cant_vencida
+
+print('\n********************************************************************') 
+print('************************* Devoluciones *****************************') 
+print('********************************************************************')   
+    
+print(f'\nTotal, de galletas devueltas: {suma_cantidades}')
+
+print (f"* Las galletas fueron devueltas porque saben maluco:  ", cant_sabe_maluco)
+print (f"* Las galletas fueron devueltas porque está muy fea:  ", cant_esta_fea)
+print (f"* Las galletas fueron devueltas porque está muy cara: ", cant_muy_cara)
+print (f"* Las galletas fueron devueltas porque está vencida:  ", cant_vencida)
+
+mayor_numero_devoluciones = np.array([('Es devuelta porque sabe muy maluco', cant_sabe_maluco),('Es devuelta porque está muy fea', cant_esta_fea),('Es devuelta porque está muy cara', cant_muy_cara),('Es devuelta porque está vencida', cant_vencida)])
+ordenar_ventas = np.argsort(mayor_numero_devoluciones[:, 1])
+
+mayor_numero_devoluciones_ordenado = mayor_numero_devoluciones[ordenar_ventas][::-1]
+
+print(f'* La mayor cantidad de galletas {mayor_numero_devoluciones_ordenado[0][0]} y la cantidad es: {mayor_numero_devoluciones_ordenado[0][1]}')
+
+
+ganancia_total = subtotal_venta_galletas - devoluciones_total - valor_fabricacion
+
+print('\n********************************************************************') 
+print ('*********************** Precios para inventario ********************')
+print('********************************************************************') 
+
+print(f"\n* El precio total de fabricación es de: ${valor_fabricacion}")
+print(f"* El precio total de venta es de: ${subtotal_venta_galletas}")
+print(f"* El precio total perdido por devoluciones es de: ${devoluciones_total}")
+print(f"* La ganancia total es de: ${ganancia_total}")
+
+print('\n********************************************************************')  
+print('************************* Fin del programa *************************')
+print('********************************************************************')  
